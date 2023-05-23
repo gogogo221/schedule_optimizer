@@ -1,4 +1,4 @@
-from uscschedule import Schedule as usc_api_handle
+from ..course_api.schedule import Schedule as usc_api_handle
 from .courseCombo import CourseCombo, ClassSchedule
 from .util import time_to_min
 import copy
@@ -13,9 +13,9 @@ class Optimizer:
             self.required_courses = required_courses #priority is basically require class or no so its a dict of bools
             self.blocked_times = blocked_times
             self.want_available = available
-            self.rmp = rmp
-            self.rmp_difficulty = rmp_difficulty
-            self.units = units  
+            self.min_rmp = rmp
+            self.max_rmp_difficulty = rmp_difficulty
+            self.units_wanted = units  
         
     def __init__(self, course_ids:list, semester_id:str, required_courses: list = None, blocked_times:list = None, available:bool = None, rmp:float = None, rmp_difficulty:float = None, units:int=None):
         self.course_ids = course_ids
@@ -116,12 +116,12 @@ class Optimizer:
             units = 0
             for combo in prev_combos:
                 units += combo.units
-            if(units == self.prefrences.units):
+            if(units == self.prefrences.units_wanted):
                 sched = ClassSchedule(course_combos=prev_combos)
                 possible_combos.append(sched)
                 return
             #base case if out of clases or over units wanted
-            if(len(temp_courses) == 0 or units > self.prefrences.units):
+            if(len(temp_courses) == 0 or units > self.prefrences.units_wanted):
                 return
             #get current course and all its lec/lab/disc/qz combos
             for i, val in enumerate(temp_courses):
@@ -197,9 +197,9 @@ class Optimizer:
         return True
     
     def check_units(self, schedule):
-        if(self.prefrences.units is None):
+        if(self.prefrences.units_wanted is None):
             return True
-        return schedule.units == self.prefrences.units
+        return schedule.units == self.prefrences.units_wanted
 
         
         

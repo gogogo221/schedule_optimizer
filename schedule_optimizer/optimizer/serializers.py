@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Professor, Time, Schedule, Course, Session
+from .models import Professor, Time, Schedule, Course, Session, CourseCombo
 from django.contrib.auth.models import User
 
 
@@ -20,10 +20,33 @@ class SessionSerializer(serializers.ModelSerializer):
         model = Session
         fields = "__all__"
 
+
+
 class CourseSerializer(serializers.ModelSerializer):
-    sessions = SessionSerializer(many=True)
-    
+    sessions = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field="id"
+    )    
     class Meta:
         model = Course
-        fields = ["name", "tag", "units", "schedule", "semester", "sessions"]
+        fields = "__all__"
 
+class CourseComboSerializer(serializers.ModelSerializer):
+    course = CourseSerializer()
+    sessions = SessionSerializer(many=True)
+    times = TimeSerializer(many=True)
+    class Meta:
+        model = CourseCombo
+        fields = ["id", "course", "sessions", "times"]
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "email"]
+class ScheduleSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    course_combos = CourseComboSerializer(many=True)
+
+    class Meta:
+        model = Schedule
+        fields = "__all__"

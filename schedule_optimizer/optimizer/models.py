@@ -18,17 +18,11 @@ class Time(models.Model):
     def __str__(self):
         return f"{self.day}, {self.start}, {self.end}"
 
-class Schedule(models.Model):
-    user = models.ForeignKey(User, related_name="schedules", on_delete=models.CASCADE, null=True)
-    units = models.IntegerField()
-    def __str__(self):
-        return f""
 
 class Course(models.Model):
     name = models.CharField(max_length=150, unique=True) #software engineering
     tag = models.CharField(max_length=50) #CSCI-201
     units = models.IntegerField()#4
-    schedule = models.ForeignKey(Schedule, related_name="courses", on_delete=models.CASCADE)
     semester = models.IntegerField()
 
     class Meta:
@@ -49,9 +43,16 @@ class Session(models.Model):
     def __str__(self):
         return f"{self.id}, {self.time}, {self.professor}"
 
+
+class Schedule(models.Model):
+    user = models.ForeignKey(User, related_name="schedules", on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return f""
 class CourseCombo(models.Model):
-    schedule = models.ForeignKey(Schedule, related_name="course_combos", on_delete=models.CASCADE)
+    #maybe schedule is many to many
     course = models.ForeignKey(Course, related_name="course_combos", on_delete=models.CASCADE)
     sessions = models.ManyToManyField(Session)
-    units = models.IntegerField()
     times = models.ManyToManyField(Time)
+    schedules = models.ManyToManyField(Schedule, related_name="course_combos", null=True)
+
+    

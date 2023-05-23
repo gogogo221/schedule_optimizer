@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
-from .models import Professor, Time, Schedule, Course, Session
-from .serializers import ProfessorSerializer, TimeSerializer, SessionSerializer, CourseSerializer
+from .models import Professor, Time, Schedule, Course, Session, CourseCombo
+from .serializers import ProfessorSerializer, TimeSerializer, SessionSerializer, CourseSerializer, ScheduleSerializer, CourseComboSerializer, ScheduleSerializer
 from .generator.optimizer import Optimizer
 
 @api_view(['GET'])
@@ -31,6 +31,24 @@ def getAllCourses(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+def getAllSchedules(request):
+    schedule = Schedule.objects.all()
+    serializer = ScheduleSerializer(schedule, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def getAllCourseCombos(request):
+    course_combo = CourseCombo.objects.all()
+    serializer = CourseComboSerializer(course_combo, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def getAllSchedules(request):
+    schedule = Schedule.objects.all()
+    serializer = ScheduleSerializer(schedule, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
 def generateSchedule(request):
     
     
@@ -38,6 +56,23 @@ def generateSchedule(request):
     semester_id = request.GET.get("semester_id")
     required_courses = request.GET.getlist("required_courses")
     blocked_times = request.GET.getlist("blocked_times")
+    want_available = request.GET.get("available")
+    min_rmp = request.GET.get("min_rmp")
+    max_rmp_difficulty = request.GET.get("max_rmp_difficulty")
+    units_wanted = request.GET.get("units_wanted")
+    optimizer = Optimizer(course_ids, 
+                          semester_id, 
+                          required_courses,
+                          blocked_times,
+                          want_available,
+                          rmp=min_rmp,
+                          rmp_difficulty=max_rmp_difficulty,
+                          units=units_wanted)
+    generated_schedules = optimizer.generate_schedules()
+    filtered_combos = optimizer.filter_combinations(generated_schedules)
+
+                          
+
 
     return Response(data)
 

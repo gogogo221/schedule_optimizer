@@ -8,6 +8,9 @@ urlpatterns = [
     path("all/professors/", views.getAllProfessors, name="getAllProfessors"),
     path("all/sessions/", views.getAllSessions, name="getAllSessions"),
     path("all/courses/", views.getAllCourses, name="getAllCourses"),
+    path("all/course_combos/", views.getAllCourseCombos, name="getAllCourseCombos"),
+    path("all/schedules/", views.getAllSchedules, name="getAllSchedules"),
+
     re_path(r'^generate/$', views.generateSchedule, name='generateSchedule'),
 
     #post
