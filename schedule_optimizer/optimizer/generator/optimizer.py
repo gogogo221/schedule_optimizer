@@ -1,21 +1,36 @@
+#from ..course_api.schedule import Schedule as usc_api_handle
 from ..course_api.schedule import Schedule as usc_api_handle
+from ..course_api.models import Course, SectionData, Instructor
 from .courseCombo import CourseCombo, ClassSchedule
 from .util import time_to_min
+from .serializers import ComplexEncoder
+from ..models import Professor
+"""from course_api.schedule import Schedule as usc_api_handle
+from course_api.models import Course, SectionData, Instructor
+from serializers import ComplexEncoder
+from courseCombo import CourseCombo, ClassSchedule
+from util import time_to_min"""
 import copy
 import random
+import json
 
-NUM_COMBO_PER_COURSE = 5
 
+NUM_COMBO_PER_COURSE = 9999999
+
+
+
+
+class filter:
+    def __init__(self, required_courses: list = None, blocked_times:list = None, available:bool = None, rmp:float = None, rmp_difficulty:float = None, units:int=None):
+        self.required_courses = required_courses #priority is basically require class or no so its a dict of bools
+        self.blocked_times = blocked_times
+        self.want_available = available
+        self.min_rmp = rmp
+        self.max_rmp_difficulty = rmp_difficulty
+        self.units_wanted = units  
 class Optimizer:
     #subclass to hold prefrence information
-    class filter:
-        def __init__(self, required_courses: list = None, blocked_times:list = None, available:bool = None, rmp:float = None, rmp_difficulty:float = None, units:int=None):
-            self.required_courses = required_courses #priority is basically require class or no so its a dict of bools
-            self.blocked_times = blocked_times
-            self.want_available = available
-            self.min_rmp = rmp
-            self.max_rmp_difficulty = rmp_difficulty
-            self.units_wanted = units  
+
         
     def __init__(self, course_ids:list, semester_id:str, required_courses: list = None, blocked_times:list = None, available:bool = None, rmp:float = None, rmp_difficulty:float = None, units:int=None):
         self.course_ids = course_ids
@@ -23,23 +38,44 @@ class Optimizer:
         self.usc_api_handle = usc_api_handle()
         self.prefrences = filter(required_courses, blocked_times, available, rmp, rmp_difficulty, units)
 
+
+    
+
+    def set_rmp(self, course):
+        for section in course.sections:
+            for instructor in section.instructors:
+                name = instructor.first_name + " " + instructor.last_name
+                rmp_profs = Professor.objects.filter(name=name)
+                if len(rmp_profs) == 0:
+                    instructor.rating = None
+                    instructor.num_ratings = None
+                    instructor.difficulty = None
+                else:
+                    rmp_prof = rmp_profs[0]
+                    instructor.rating = float(rmp_prof.rating)
+                    instructor.num_ratings = int(rmp_prof.num_ratings)
+                    instructor.difficulty = float(rmp_prof.difficulty)
+
+
     #function to create course objects for list of class names
     def get_courses(self) -> dict:
         id_to_course = {}
         for id in self.course_ids:
-            id_to_course[id] = self.usc_api_handle.get_course(course_id=id, semester_id=self.semester_id)
+            print(id)
+            course = self.usc_api_handle.get_course(course_id=id, semester_id=self.semester_id)
+            self.set_rmp(course)
+            id_to_course[id] = course
         return id_to_course
 
-    #function to generate list of unique course combo objects 
-    #that has each required section a student needs to take at once
-    def generate_single_course_combos(self, course) -> list:
-        #initialize sections
-        #TODO need to seperate different lectures
+    #function to generate combos for each section group 
+    def generate_combos(self, course, group_sections:list) -> list:
+        #generate combos
+        combinations = []
         lectures = []
         labs = []
         discussions = []
         quizes = []
-        for section in course.sections:
+        for section in group_sections:
             if section.type == "Lec" or section.type == "Lec-Lab" or section.type == "Lec-Dis":
                 lectures.append(section)
             elif section.type == "Lab":
@@ -57,8 +93,6 @@ class Optimizer:
         if(len(quizes) == 0):
             quizes = [None]
     
-        #generate combos
-        combinations = []
         for lecture in lectures:
             for lab in labs:
                 for discussion in discussions:
@@ -68,12 +102,44 @@ class Optimizer:
         random.shuffle(combinations)
         return combinations[0:NUM_COMBO_PER_COURSE]
 
+    #function to generate list of unique course combo objects 
+    #that has each required section a student needs to take at once
+    def generate_single_course_combos(self, course) -> list:
+        #initialize sections
+        #TODO need to seperate different lectures
+        #define what type of course this is
+        #type 1: all lecture sections can be taken interchangeably
+        #type2: lab/quiz/disc can only be taken with specific lecture sections
+        
+        #find all lecture-lab/disc/quiz groups
+        sections = course.sections
+        section_group_indexes = [0]
+        last_section = sections[0]
+        for i in range(1,len(sections)):
+            #check if last section wasnt a lecture and this one is a lecture
+            if  last_section.type != "Lec" and last_section.type != "Lec-Lab" and last_section.type != "Lec-Dis" and \
+                (sections[i].type == "Lec" or sections[i].type == "Lec-Lab" or sections[i].type == "Lec-Dis"):
+                    section_group_indexes.append(i)
+            last_section = sections[i]
+        section_group_indexes.append(len(sections))
+
+        combinations = []
+        for i in range(len(section_group_indexes)-1):
+            section_group = sections[section_group_indexes[i]: section_group_indexes[i+1]]
+            combinations += self.generate_combos(course, section_group)
+        return combinations
+
+
 
     #helper function to check if a time overlaps
     def overlaps(self, current_section_time, prev_section_time):
         #check if on same day
         #print(f"{current_section_time} {prev_section_time}")
-        if(current_section_time[0] != prev_section_time[0]):
+        day_overlaps = False
+        for day in current_section_time[0]:
+            if day in prev_section_time[0]:
+                day_overlaps = True
+        if(day_overlaps == False):
             return False
         #check new-end is before old-start
         if(time_to_min(current_section_time[2]) < time_to_min(prev_section_time[1])):
@@ -117,7 +183,7 @@ class Optimizer:
             for combo in prev_combos:
                 units += combo.units
             if(units == self.prefrences.units_wanted):
-                sched = ClassSchedule(course_combos=prev_combos)
+                sched = ClassSchedule(course_combos=prev_combos, semester=self.semester_id)
                 possible_combos.append(sched)
                 return
             #base case if out of clases or over units wanted
@@ -147,7 +213,7 @@ class Optimizer:
         if(self.prefrences.want_available is None or self.prefrences.want_available is False):
             return True
         
-        courses = schedule.classes
+        courses = schedule.course_combos
         for courseCombo in courses:
             if section_full(courseCombo.lecture) \
                 or section_full(courseCombo.lab) \
@@ -161,7 +227,7 @@ class Optimizer:
         if(self.prefrences.required_courses is None):
             return True
         required_courses = self.prefrences.required_courses
-        courses = schedule.classes
+        courses = schedule.course_combos
         #count number of required courses are selected
         selected_required_courses = 0
         for class_combo in courses:
@@ -179,6 +245,15 @@ class Optimizer:
         if(self.prefrences.blocked_times is None):
             return True
         #need to account for when prof doesnt have rmp
+        class_combos = schedule.course_combos
+        min_rmp = self.prefrences.min_rmp
+        max_diff = self.prefrences.max_rmp_difficulty
+        for class_combo in class_combos:
+            prof = class_combo.get_professor()
+            if prof.rating == None or prof.difficulty == None or min_rmp == None or max_diff == None:
+                continue
+            if(prof.rating < min_rmp and prof.difficulty > max_diff):
+                return False
         return True
     
     #check if courses overlap with any times 
@@ -214,7 +289,6 @@ class Optimizer:
             #check availability of all course sections(ifthey exist)
             #check overlap block times
             #check if num units matches
-            print(schedule.units)
             if self.check_available(schedule) \
                and self.check_blocked_time(schedule) \
                and self.check_prioritized(schedule) \
@@ -228,19 +302,35 @@ class Optimizer:
 
 
 if __name__ == "__main__":
+    import time
+    start_time = time.time()
 
-    id = "20233"
-    course_ids = ["CSCI-353", "CSCI-356", "CSCI-360", "CSCI-170", "LING-115", "WRIT-150"]
-    pref = filter(units=16)
-    optimizer = Optimizer(course_ids,id,pref)
+    
+
+    id = "20231"
+    course_ids = ["MATH-125", "CSCI-103", "LING-115", "CSCI-170"]
+    optimizer = Optimizer(course_ids,id,units=16, available=True, rmp=3, rmp_difficulty=4)
+    #courses = optimizer.get_courses()
+    #print("--- %s seconds rmp ---" % (time.time() - start_time))
+    #course_1 = list(courses.values())[0]
+    #course_combos = optimizer.generate_single_course_combos(course_1)
+    """for course in courses.values():
+        combos = optimizer.generate_single_course_combos(course)
+        for combo in combos:
+            print(combo)
+            print(str(combo.get_professor()))"""
     scheds = optimizer.generate_schedules()
     scheds = optimizer.filter_combinations(scheds)
-    for sched in scheds:
+    print("--- %s seconds optimizer ---" % (time.time() - start_time))
+    schedule1 = scheds[0]
+    print( json.dumps(scheds, cls=ComplexEncoder, indent=4))
+    #print(json.dumps(schedule1.reprJSON(), default=ComplexEncoder))
+    """for sched in scheds:
         combos = sched.course_combos
         for combo in combos:
             print(combo, "")
             print(combo.lecture.title, "")
             if(len(combo.lecture.instructors)!=0):
                 print(combo.lecture.instructors[0].get_name(), "")
-        print()
+        print()"""
     print(len(scheds))

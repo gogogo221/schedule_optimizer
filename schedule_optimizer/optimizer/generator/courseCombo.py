@@ -1,20 +1,9 @@
-import pandas as pd
-import numpy as np
-
-
 #maybe dont bother with the 2d array 
 # and instaed just keep track of list of day + times
 #since im just checking for overlap with each time
 #TODO dont redo to not use 2d array
 
-class Time:
-    def __init__(self, day, start, end):
-        self.day = day
-        self.start = start
-        self.end = end
-    
-    def __str__(self):
-        return f"{self.day} {self.start} {self.end}"
+
 
 class CourseCombo:
     def __init__(self, course, lecture, lab, discussion, quiz):
@@ -39,14 +28,51 @@ class CourseCombo:
     def __str__(self):
         return f"{self.times}"
 
+    def get_professor(self):
+        if self.lecture is not None:
+            if len(self.lecture.instructors) >0:
+                return self.lecture.instructors[0]
+            else:
+                return None
+            
+    def reprJSON(self):
+        retval =  {
+                    "course":self.course,
+                    "sessions": [
+                                    #TODO LATER
+                                ]
+                }
+        if self.lecture is not None:
+            retval["sessions"].append(self.lecture)
+        if self.lab is not None:
+            retval["sessions"].append(self.lab)
+        if self.discussion is not None:
+            retval["sessions"].append(self.discussion)
+        if self.quiz is not None:
+            retval["sessions"].append(self.quiz)
+        return retval
+        
+
+
+
 
 class ClassSchedule:
-    def __init__(self, course_combos=list):
+    def __init__(self, course_combos=list, semester=str):
         self.course_combos = course_combos
         #count units in the schedule
         self.units = 0
+        self.semester = semester
         for course_combo in self.course_combos:
             self.units += course_combo.units
+        
+    def reprJSON(self):
+        retval={
+                    "units":self.units,
+                    "course_combos":self.course_combos,
+                    "semester":self.semester
+               }
+        return retval
+
 
 
 

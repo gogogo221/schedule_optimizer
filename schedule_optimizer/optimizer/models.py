@@ -5,11 +5,13 @@ from django.contrib.auth.models import User
 
 class Professor(models.Model):
     name = models.CharField(max_length=100,  unique=True)
-    rating = models.DecimalField(max_digits=5, decimal_places=1)
-    num_ratings = models.IntegerField()
-    difficulty = models.DecimalField(max_digits=5, decimal_places=1)
+    rating = models.DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
+    num_ratings = models.IntegerField(null=True, blank=True)
+    difficulty = models.DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
     def __str__(self):
         return f"{self.name}, rating: {self.rating}, number of ratings: {self.num_ratings}"
+
+
 
 class Time(models.Model):
     day = models.CharField(max_length=10)
@@ -55,4 +57,6 @@ class CourseCombo(models.Model):
     times = models.ManyToManyField(Time)
     schedules = models.ManyToManyField(Schedule, related_name="course_combos", null=True)
 
+
+        
     

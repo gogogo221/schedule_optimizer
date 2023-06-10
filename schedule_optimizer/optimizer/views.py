@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from .models import Professor, Time, Schedule, Course, Session, CourseCombo
 from .serializers import ProfessorSerializer, TimeSerializer, SessionSerializer, CourseSerializer, ScheduleSerializer, CourseComboSerializer, ScheduleSerializer
 from .generator.optimizer import Optimizer
+import json
+from .generator.serializers import ComplexEncoder
 
 @api_view(['GET'])
 def getAllProfessors(request):
@@ -58,8 +60,11 @@ def generateSchedule(request):
     blocked_times = request.GET.getlist("blocked_times")
     want_available = request.GET.get("available")
     min_rmp = request.GET.get("min_rmp")
+    min_rmp = float(min_rmp) if min_rmp else None
     max_rmp_difficulty = request.GET.get("max_rmp_difficulty")
+    max_rmp_difficulty = float(max_rmp_difficulty) if max_rmp_difficulty else None
     units_wanted = request.GET.get("units_wanted")
+    units_wanted = int(units_wanted) if units_wanted else None
     optimizer = Optimizer(course_ids, 
                           semester_id, 
                           required_courses,
@@ -69,11 +74,11 @@ def generateSchedule(request):
                           rmp_difficulty=max_rmp_difficulty,
                           units=units_wanted)
     generated_schedules = optimizer.generate_schedules()
-    filtered_combos = optimizer.filter_combinations(generated_schedules)
+    filtered_schedules = optimizer.filter_combinations(generated_schedules)
+    #need to serialize filtered_combos 
+    data = json.dumps(filtered_schedules, cls=ComplexEncoder)
 
-                          
-
-
+    print(repr(data))
     return Response(data)
 
 

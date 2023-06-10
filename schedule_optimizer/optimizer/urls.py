@@ -12,7 +12,7 @@ urlpatterns = [
     path("all/schedules/", views.getAllSchedules, name="getAllSchedules"),
 
     re_path(r'^generate/$', views.generateSchedule, name='generateSchedule'),
-
+    
     #post
     path("add/professor/", views.addProfessor, name="addProfessor"),
 ]

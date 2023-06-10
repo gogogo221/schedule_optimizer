@@ -117,6 +117,26 @@ class Course(Base):
     def all_labs_closed(self) -> bool:
         return self.lab_capacity - self.lab_registered <= 0
 
+    def get_professors(self):
+        professors = set()
+        if self.has_lecture_sections():
+            for section in self.sections:
+                if section.type == "Lec" or section.type == "Lec-Lab" or section.type == "Lec-Dis": 
+                    for instructor in section.instructors:
+                        professors.add(instructor.first_name + " " + instructor.last_name)
+        return professors
+        
+            
+
+    def reprJSON(self):
+        retval={
+                    "name":self.title,
+                    "tag":self.published_course_id,
+                    "units":self.units[0],
+                    "sessions":[session.id for session in self.sections]
+               }
+        return retval
+
 
 class SectionData(Base):
     def __init__(self, response: dict):
@@ -142,7 +162,7 @@ class SectionData(Base):
         self.distance_learning = True if response.get("IsDistanceLearning") == "Y" else False
         self.instructors = self.__get_instructors()
         self.fees = self.__get_fees()
-
+        self.time = Time
         # Section is close if there are greater or equal registered than available
         self.closed = self.registered >= self.capacity
 
@@ -171,15 +191,46 @@ class SectionData(Base):
     def compile_session_time(self) -> tuple:
         return (self.day, self.start_time, self.end_time)
 
+    def reprJSON(self):
+        retval={
+                    "id":self.id,
+                    "professor":self.instructors,
+                    "time":{
+                        "day":self.day,
+                        "start":self.start_time,
+                        "end":self.end_time
+                    },
+                    "type":self.type,
+                    "capacity":self.capacity,
+                    "registered":self.registered,
+                    "dclearence":self.requires_d_clearance()
+               }
+        return retval
+    
 class Instructor(Base):
     def __init__(self, response: dict):
         super().__init__(response)
         self.first_name = response.get("first_name")
         self.last_name = response.get("last_name")
         self.bio_url = response.get("bio_url")
+        self.rating = None
+        self.num_ratings = None
+        self.difficulty = None
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} {self.rating} {self.num_ratings} {self.difficulty}"
 
     def get_name(self):
         return self.first_name + " " + self.last_name
+    
+    def reprJSON(self):
+        retval={
+                    "name":self.first_name + " " + self.last_name,
+                    "rating":self.rating,
+                    "num_ratings":self.num_ratings,
+                    "difficulty":self.difficulty
+               }
+        return retval
 
 
 class Fee(Base):
@@ -187,3 +238,15 @@ class Fee(Base):
         super().__init__(response)
         self.description = response.get("description")
         self.amount = response.get("amount")
+
+class Time:
+    def __init__(self, day, start, end):
+        self.day = day
+        self.start = start
+        self.end = end
+    
+    def __str__(self):
+        return f"{self.day} {self.start} {self.end}"
+    
+    def reprJSON(self):
+        return  self.__dict__
