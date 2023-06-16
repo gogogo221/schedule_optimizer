@@ -52,8 +52,7 @@ def getAllSchedules(request):
 
 @api_view(['GET'])
 def generateSchedule(request):
-    
-    
+
     course_ids = request.GET.getlist("courses")
     semester_id = request.GET.get("semester_id")
     required_courses = request.GET.getlist("required_courses")
