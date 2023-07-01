@@ -3,9 +3,7 @@
 
 
 }
-#container{
-  text-align: center;
-}
+
 #nav-title{
   font-family: Diphylleia;
   margin-left: 10px;
@@ -37,10 +35,13 @@
   display: flex;
   flex-direction: row;
   padding-top: 150px;
-  height:600px;
+  height:650px;
   background-color: #ca3d3d;
   width: 100%;
   text-align: center;
+  /* for extending background color */
+  box-shadow: 0 0 0 100vmax #ca3d3d;
+  clip-path: inset(0 -100vmax);
 
 
 }
@@ -50,7 +51,7 @@
   transform: rotate(3deg);
   padding: 0;
   width: 500px;
-  height: auto;
+  height: 470px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 20px;
 
@@ -105,7 +106,7 @@ h1{
 #features-list{
   display: flex;
   flex-direction: row;
-  margin-left: 150px;
+  margin-left: 0px;
   padding-top: 20px;
 }
 
@@ -152,7 +153,88 @@ margin-bottom: 5px;
   margin: 0px;
 }
 
-form{
-  padding: 100px;
-  height: 500px;
+.form-container{
+  padding-top:100px;
+  padding-bottom: 50px;
+}
+
+.form-subheading{
+  padding-top:20px;
+}
+
+.course-field > label{
+  /* padding-top:10px; */
+  padding-top: 15px;
+}
+
+.form-group > div{
+  padding-top:10px;
+
+}
+.form-semester{
+  padding-top: 10px;
+}
+.form-units{
+  padding-top: 10px;
+}
+
+.form-check{
+  padding-top: 10px;
+
+}
+
+.form-submit{
+  margin-top: 15px;
+  margin-left: 13px;
+  background-color: #ca3d3d;
+
+}
+
+.form-difficulty{
+  padding-top: 10px;
+}
+
+.form-result-table{
+    font-size: 35px;
+}
+
+.schedule-box{
+  background-color: rgb(204, 254, 191);
+}
+.course-box{
+  background-color: antiquewhite;
+}
+
+.sessions{
+  margin-bottom: 20px;
+}
+
+.session-box{
+  background-color: azure;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+
+.sub-session{
+  /* display: flex; */
+}
+.sub-session > p{
+ margin-bottom: 3px;
+}
+
+.schedule-box{
+  display: flex;
+}
+.schedules-container{
+}
+
+.professor-info > h6{
+  margin-bottom: 0px;
+}
+.rmp_info{
+  margin-top: 0px;
+}
+
+.course-table-row > tr > th{
+  font-size: 35px;
 }

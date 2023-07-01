@@ -8,6 +8,7 @@ from .generator.optimizer import Optimizer
 import json
 from .generator.serializers import ComplexEncoder
 
+
 @api_view(['GET'])
 def getAllProfessors(request):
     professor = Professor.objects.all()

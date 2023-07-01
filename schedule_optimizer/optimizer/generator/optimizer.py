@@ -15,7 +15,7 @@ import random
 import json
 
 
-NUM_COMBO_PER_COURSE = 9999999
+NUM_COMBO_PER_COURSE = 5
 
 
 

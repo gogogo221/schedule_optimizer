@@ -11,9 +11,14 @@ export default function Landing(){
     return (
       <>    
       <Navbar />
-      <div id="container">
-        <Hero />
-        <Features />
+      <div className="container">
+        <div className="row">
+          <div className="col-12">
+          <Hero />
+          <Features />
+          </div>
+        </div>
+        
       </div>
       <Footer />
   
