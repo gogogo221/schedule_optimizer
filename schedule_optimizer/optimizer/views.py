@@ -7,7 +7,7 @@ from .serializers import ProfessorSerializer, TimeSerializer, SessionSerializer,
 from .generator.optimizer import Optimizer
 import json
 from .generator.serializers import ComplexEncoder
-
+from rest_framework import status
 
 @api_view(['GET'])
 def getAllProfessors(request):
@@ -91,5 +91,15 @@ def addProfessor(request):
         serializer.save()
     return Response(serializer.data)
 
-
-
+@api_view(['POST'])
+def addSchedule(request):
+    print(request.data)
+    serializer = ScheduleSerializer(data=request.data)
+    #get the user and set in the serializer
+    if serializer.is_valid():
+        serializer.user = request.user.id
+        serializer.save()
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #if valid; save
+    #return response

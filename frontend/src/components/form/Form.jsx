@@ -47,16 +47,21 @@ export default function Form(props){
         $.ajax({
             url: url,
             type: "GET", 
+            beforeSend: function(request) {
+                request.setRequestHeader("Authorization", `Token ${localStorage.getItem("Token")}`);
+              },
             data: formData,
             dataType: "text",
+            
             success: function (data){
                 
                 const data_obj = JSON.parse(JSON.parse(data))
+                console.log(JSON.stringify(data_obj))
                 props.setSchedule(data_obj.slice(0, Math.min(5, data_obj.length)))
                 for (let i=0; i<data_obj.length; i++){
                     let schedule = data_obj[i]
                     let course_combos = schedule.course_combos
-                    console.log(course_combos)
+                    
                 }
             },
             error:function(x,e) {

@@ -50,3 +50,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = "__all__"
+
+    def create(self, validated_data):
+        course_combos = validated_data.pop("course_combos")
+        

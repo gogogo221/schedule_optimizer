@@ -146,7 +146,7 @@ margin-bottom: 5px;
   background-color: #ca3d3d;
   color:white;
   padding: 5px;
-  font-size: 20px;
+  font-size: 10px;
 }
 #footer-text > p{
   padding: 0px;
@@ -237,4 +237,35 @@ margin-bottom: 5px;
 
 .course-table-row > tr > th{
   font-size: 35px;
+}
+.registration-page{
+  background-color: rgb(131, 131, 131);
+}
+.registration-box{
+  height: 500px;
+  margin-top: 150px;
+  border-radius: 5px;
+  margin-bottom: 100px;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}
+.registration-box > div {
+  margin-bottom: 10px;
+}
+
+.register-button{
+  width: 100%;
+  margin-top: 20px;
+  
+}
+
+.registration-header{
+  font-size: 25px;
+  margin-top: 30px;
+  font-weight: bold;
+}
+
+.alr-have{
+  margin-top: 30px;
 }

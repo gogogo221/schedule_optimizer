@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     "register.apps.RegisterConfig",
     "optimizer.apps.OptimizerConfig",
     'corsheaders',
+    'rest_framework.authtoken',
+    "knox",
+
 ]
 
 MIDDLEWARE = [
@@ -55,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
 ]
 
 ROOT_URLCONF = "schedule_optimizer.urls"
@@ -132,3 +136,12 @@ LOGIN_REDIRECT_URL = "/home"
 LOGOUT_REDIRECT_URL = "/login"
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'knox.auth.TokenAuthentication',
+    ],
+'DEFAULT_PERMISSION_CLASSES': [
+    'rest_framework.permissions.IsAuthenticated',
+]
+}

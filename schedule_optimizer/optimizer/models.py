@@ -55,7 +55,7 @@ class CourseCombo(models.Model):
     course = models.ForeignKey(Course, related_name="course_combos", on_delete=models.CASCADE)
     sessions = models.ManyToManyField(Session)
     times = models.ManyToManyField(Time)
-    schedules = models.ManyToManyField(Schedule, related_name="course_combos", null=True)
+    schedules = models.ManyToManyField(Schedule, related_name="course_combos")
 
 
         

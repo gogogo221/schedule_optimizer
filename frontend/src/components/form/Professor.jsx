@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 export default function Professor(props){
-    console.log(props.professor)
+    
     return (
         <div className="professor-info">
             <h6>Professor: {props.professor.name}</h6>
