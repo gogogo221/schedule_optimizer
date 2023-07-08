@@ -4,14 +4,11 @@ from . import views
 
 urlpatterns = [
     #get
-    path("all/times/", views.getAllTimes, name="getAllTimes"),
     path("all/professors/", views.getAllProfessors, name="getAllProfessors"),
-    path("all/sessions/", views.getAllSessions, name="getAllSessions"),
-    path("all/courses/", views.getAllCourses, name="getAllCourses"),
-    path("all/course_combos/", views.getAllCourseCombos, name="getAllCourseCombos"),
     path("all/schedules/", views.getAllSchedules, name="getAllSchedules"),
-    
-    
+    path("isloggedin/", views.isLoggedIn, name="isLoggedIn"),
+    path("getschedules/", views.getSchedules, name="getSchedules"),
+
     re_path(r'^generate/$', views.generateSchedule, name='generateSchedule'),
     
     #post

@@ -20,7 +20,9 @@ export default function Navbar(){
                     <div className="navbar-nav ms-auto  shadow-3" id="nav-right">
                         <Link className="nav-item nav-link" to="/login">Log in</Link>
                         <Link className="nav-item nav-link" to="/register">Register</Link>
+                        <Link className="nav-item nav-link" to="/saved-schedules">Saved Schedules</Link>
                         <Link className="nav-item nav-link" to="/tool-form">Schedule Tool</Link>
+                    
                     </div>
                 </div>
             </nav>

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Course from "./Course";
 
 export default function Schedule(props){
-    const courses = props.schedule ? props.schedule["course_combos"] : null
+    let courses = props.schedule ? props.schedule["course_combos"] : null
+    
     return(
         <>
 

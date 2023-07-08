@@ -61,7 +61,7 @@ class Optimizer:
     def get_courses(self) -> dict:
         id_to_course = {}
         for id in self.course_ids:
-            print(id)
+            
             course = self.usc_api_handle.get_course(course_id=id, semester_id=self.semester_id)
             self.set_rmp(course)
             id_to_course[id] = course
@@ -242,17 +242,18 @@ class Optimizer:
             return selected_required_courses == len(required_courses)
 
     def check_rmp_score_difficulty(self, schedule):
-        if(self.prefrences.blocked_times is None):
-            return True
+
         #need to account for when prof doesnt have rmp
         class_combos = schedule.course_combos
         min_rmp = self.prefrences.min_rmp
         max_diff = self.prefrences.max_rmp_difficulty
         for class_combo in class_combos:
             prof = class_combo.get_professor()
-            if prof.rating == None or prof.difficulty == None or min_rmp == None or max_diff == None:
-                continue
-            if(prof.rating < min_rmp and prof.difficulty > max_diff):
+            print(prof.rating)
+            
+            if prof.rating != None and min_rmp != None and prof.rating < min_rmp:
+                return False
+            if prof.difficulty != None and max_diff != None and prof.difficulty > max_diff:
                 return False
         return True
     

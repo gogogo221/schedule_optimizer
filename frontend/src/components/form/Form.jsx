@@ -7,19 +7,15 @@ export default function Form(props){
 
     function GetCourses(event) {
         event.preventDefault();
-        console.log(event)
         //http://127.0.0.1:8000/generate/?available=True&courses=CSCI-104&courses=CSCI-201&format=json&semester_id=20231&units_wanted=8
         let url = "http://127.0.0.1:8000/generate/?"
         //semester_id
-        console.log(semester_id.value)
         url += `semester_id=${semester_id.value}`
 
         //units wanted
-        console.log(units_wanted.value)
         url+= `&units_wanted=${units_wanted.value}`
 
         //want open
-        console.log(want_available.checked)
         url+= `&want_available=${want_available.checked}`
 
         //courses
@@ -40,7 +36,7 @@ export default function Form(props){
             url += `&max_rmp_difficulty=${max_rmp_difficulty.value}`
         }
 
-        console.log(url)
+       
 
         //make a ajax querry to get json response 
         let formData = ""
@@ -56,13 +52,11 @@ export default function Form(props){
             success: function (data){
                 
                 const data_obj = JSON.parse(JSON.parse(data))
-                console.log(JSON.stringify(data_obj))
-                props.setSchedule(data_obj.slice(0, Math.min(5, data_obj.length)))
-                for (let i=0; i<data_obj.length; i++){
-                    let schedule = data_obj[i]
-                    let course_combos = schedule.course_combos
-                    
-                }
+                
+                props.setSchedule(data_obj.slice(0, Math.min(20, data_obj.length)))
+                props.setSemesterState(semester_id.value)
+                props.setUnitsState(units_wanted.value)
+
             },
             error:function(x,e) {
                 if (x.status==0) {

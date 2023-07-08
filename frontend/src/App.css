@@ -269,3 +269,8 @@ margin-bottom: 5px;
 .alr-have{
   margin-top: 30px;
 }
+
+.saved-schedules{
+  min-height: 500px;
+  padding-top: 100px 
+}
