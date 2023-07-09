@@ -7,6 +7,7 @@ export default function Form(props){
 
     function GetCourses(event) {
         event.preventDefault();
+        props.setSchedule(null)
         //http://127.0.0.1:8000/generate/?available=True&courses=CSCI-104&courses=CSCI-201&format=json&semester_id=20231&units_wanted=8
         let url = "http://127.0.0.1:8000/generate/?"
         //semester_id
@@ -36,7 +37,23 @@ export default function Form(props){
             url += `&max_rmp_difficulty=${max_rmp_difficulty.value}`
         }
 
-       
+        function shuffle(array) {
+            let currentIndex = array.length,  randomIndex;
+          
+            // While there remain elements to shuffle.
+            while (currentIndex != 0) {
+          
+              // Pick a remaining element.
+              randomIndex = Math.floor(Math.random() * currentIndex);
+              currentIndex--;
+          
+              // And swap it with the current element.
+              [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+            }
+          
+            return array;
+          }
 
         //make a ajax querry to get json response 
         let formData = ""
@@ -51,9 +68,9 @@ export default function Form(props){
             
             success: function (data){
                 
-                const data_obj = JSON.parse(JSON.parse(data))
-                
-                props.setSchedule(data_obj.slice(0, Math.min(20, data_obj.length)))
+                let data_obj = JSON.parse(JSON.parse(data))
+                data_obj = shuffle(data_obj)
+                props.setSchedule(data_obj.slice(0, Math.min(10, data_obj.length)))
                 props.setSemesterState(semester_id.value)
                 props.setUnitsState(units_wanted.value)
 
@@ -61,7 +78,9 @@ export default function Form(props){
             error:function(x,e) {
                 if (x.status==0) {
                     alert('You are offline!!\n Please Check Your Network.');
-                } else if(x.status==404) {
+                }else if(x.status==401) {
+                    window.location.pathname = '/login'
+                }else if(x.status==404) {
                     alert('Requested URL not found.');
                 } else if(x.status==500) {
                     alert('Internel Server Error.');

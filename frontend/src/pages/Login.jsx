@@ -81,7 +81,7 @@ export default function Login(){
                     
                     <div className="row justify-content-center">
                         <div className="form-group form-units col-9">
-                        <button type="submit" className="btn btn-primary register-button">Register</button>
+                        <button type="submit" className="btn btn-primary register-button">log in</button>
                         </div>
                     </div>
 

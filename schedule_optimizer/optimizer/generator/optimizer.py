@@ -249,7 +249,9 @@ class Optimizer:
         max_diff = self.prefrences.max_rmp_difficulty
         for class_combo in class_combos:
             prof = class_combo.get_professor()
-            print(prof.rating)
+            if(prof is None): 
+                continue
+            
             
             if prof.rating != None and min_rmp != None and prof.rating < min_rmp:
                 return False

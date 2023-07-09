@@ -25,13 +25,6 @@ def getAllSchedules(request):
     serializer = ScheduleSerializer(schedule, many=True)
     return Response(serializer.data)
 
-@api_view(["GET"])
-def getSchedules(request):
-    user = User.objects.get(id=request.user.id)
-    schedules = Schedule.objects.filter(user=user)
-    print(schedules)
-    serializer = ScheduleSerializer(schedules, many=True)
-    return Response(data={"user":request.user.id, "schedules":serializer.data}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -80,9 +73,16 @@ def isLoggedIn(request):
     else:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-@api_view(['POST'])
-def addSchedule(request):
-    if request.user.is_authenticated:
+@api_view(['GET', 'POST', 'DELETE'])
+def Schedules(request):
+    if request.method == 'GET':
+        user = User.objects.get(id=request.user.id)
+        schedules = Schedule.objects.filter(user=user)
+        print(schedules)
+        serializer = ScheduleSerializer(schedules, many=True)
+        return Response(data={"user":request.user.id, "schedules":serializer.data}, status=status.HTTP_200_OK)
+
+    if request.method == 'POST':
         serializer = ScheduleSerializer(data=request.data)
         #get the user and set in the serializer
         if serializer.is_valid():
@@ -93,5 +93,10 @@ def addSchedule(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         #if valid; save
         #return response
-    return Response("user not logged in", status=status.HTTP_401_UNAUTHORIZED)
+    if request.method == "DELETE":
+        user = User.objects.get(id=request.user.id)
 
+        schedule_id = request.data.get("schedule_id")
+        schedule = Schedule.objects.get(user=user, id=schedule_id)
+        schedule.delete()
+        return Response( status=status.HTTP_200_OK)
