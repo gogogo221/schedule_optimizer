@@ -8,8 +8,8 @@ export default function Form(props){
     function GetCourses(event) {
         event.preventDefault();
         props.setSchedule(null)
-        //http://127.0.0.1:8000/generate/?available=True&courses=CSCI-104&courses=CSCI-201&format=json&semester_id=20231&units_wanted=8
-        let url = "http://127.0.0.1:8000/generate/?"
+        //http://3.144.82.207/generate/?available=True&courses=CSCI-104&courses=CSCI-201&format=json&semester_id=20231&units_wanted=8
+        let url = "http://3.144.82.207/generate/?"
         //semester_id
         url += `semester_id=${semester_id.value}`
 
@@ -130,7 +130,9 @@ export default function Form(props){
                         {/* units wanted */}
                         <div className="form-group form-units col-6">
                             <label className="" htmlFor="units_wanted">Units Wanted</label>
-                            <input required id="units_wanted" type="text" className="form-control" placeholder="16"/>
+                            <select value = {16} className="form-control" id="units_wanted">
+                                {Array.from(Array(22).keys()).map((units, index) => <option key = {index} value={units+1}>{units+1}</option>)}
+                                </select>
                         </div>
                         </div>
                         

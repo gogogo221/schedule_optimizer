@@ -10,7 +10,7 @@ export default function Login(){
     //password
     function Login(event){
         event.preventDefault();
-        const url="http://127.0.0.1:8000/auth/login/"
+        const url="http://3.144.82.207/auth/login/"
         const username = document.getElementById("username").value
         const password = document.getElementById("password").value
 

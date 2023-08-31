@@ -10,7 +10,7 @@ export default function Register(){
     //password
     function Register(event){
         event.preventDefault();
-        const url="http://127.0.0.1:8000/auth/register/"
+        const url="http://3.144.82.207/auth/register/"
         const username = document.getElementById("username").value
         const email = document.getElementById("email").value
         const password = document.getElementById("password").value

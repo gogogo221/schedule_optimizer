@@ -146,7 +146,7 @@ margin-bottom: 5px;
   background-color: #ca3d3d;
   color:white;
   padding: 5px;
-  font-size: 10px;
+  font-size: 15px;
 }
 #footer-text > p{
   padding: 0px;
@@ -202,7 +202,7 @@ margin-bottom: 5px;
 
 }
 .course-box{
-  background-color: antiquewhite;
+
 }
 
 .sessions{
@@ -240,6 +240,8 @@ margin-bottom: 5px;
 }
 .registration-page{
   background-color: rgb(131, 131, 131);
+  height: 100vh;
+  overflow: auto;
 }
 .registration-box{
   height: 500px;
@@ -271,6 +273,6 @@ margin-bottom: 5px;
 }
 
 .saved-schedules{
-  min-height: 500px;
+  min-height: 1000px;
   padding-top: 100px 
 }

@@ -14,7 +14,7 @@ class SavedSchedules extends React.Component {
         this.getSchedules = function(){
             
             $.ajax({
-                url: "http://127.0.0.1:8000/getschedules",
+                url: "http://3.144.82.207/getschedules",
                 type: "GET", 
                 beforeSend: function(request) {
                     request.setRequestHeader("Authorization", `Token ${localStorage.getItem("Token")}`);
@@ -54,7 +54,7 @@ class SavedSchedules extends React.Component {
             console.log(schedule_id)
             const formData = `schedule_id=${schedule_id}`
             $.ajax({
-                url: "http://127.0.0.1:8000/delete/schedule",
+                url: "http://3.144.82.207/delete/schedule",
                 type: "DELETE", 
                 beforeSend: function(request) {
                     request.setRequestHeader("Authorization", `Token ${localStorage.getItem("Token")}`);
@@ -99,7 +99,9 @@ class SavedSchedules extends React.Component {
             <Navbar />
         
                 <div className="schedules-container container saved-schedules">
-                            
+                    {(this.state.schedules)? this.state.schedules.schedules.length == 0 ? <h1>Save schedules from the schedule tool tab and they will appear here! </h1> : 
+
+                
                     <table className="table">
                     <thead className="form-result-table">
                         <tr>
@@ -110,20 +112,21 @@ class SavedSchedules extends React.Component {
                     
                     <tbody className="course-table-row">
                         
-                        {this.state.schedules ? 
                         
-                        this.state.schedules.schedules.map( (schedule, index) => 
+                        
+                        {this.state.schedules.schedules.map( (schedule, index) =>
                         <tr key={index}>
                             <th scope="row">
                                 {index+1} 
-                                <button type="button" id = {`delete-button-${index}`} className={`btn btn-danger `} onClick={this.deleteSchedule}>Delete Schedule</button>
+                                <button type="button" id = {`delete-button-${index}`} className={`btn btn-danger `} onClick={this.deleteSchedule}>Delete</button>
                              </th>
                            
                         <td><Schedule schedule={(schedule.course_data && schedule.course_data != "[object Object]") ? JSON.parse(schedule.course_data) : null} /></td>
-                        </tr>) 
-                        : null}
+                        </tr>) }
+                        
                     </tbody>
                     </table>
+                     : null}
                 </div> 
             <Footer />
         </>)

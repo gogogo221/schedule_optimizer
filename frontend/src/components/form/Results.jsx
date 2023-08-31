@@ -16,7 +16,7 @@ export default function Results(props){
         console.log(schedule_data)
         const formData = `semester=${props.semesterState}&units=${props.unitsState}&course_data=${JSON.stringify(schedule_data)}`
      
-        let url = "http://127.0.0.1:8000/add/schedule"
+        let url = "http://3.144.82.207/add/schedule"
         $.ajax({
             url: url,
             type: "POST", 

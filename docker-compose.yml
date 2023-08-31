@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  backend:
+    build:
+      context: ./schedule_optimizer
+    command: gunicorn schedule_optimizer.wsgi --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - frontend:/frontend
+    command: npm run dev
+volumes:
+  frontend:
